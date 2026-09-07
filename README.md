@@ -24,7 +24,7 @@ A versão disponível atualmente é a `0.1.0`. O instalador mantém `Finanse.Des
 1. Abra a [versão mais recente no GitHub](https://github.com/daviaqui/finanse-desktop/releases/latest).
 2. Em **Assets**, baixe o arquivo terminado em `.rpm`.
 3. Abra o arquivo baixado e escolha **Instalar**. Se ele não abrir no instalador do sistema, clique com o botão direito e escolha **Abrir com → Software**.
-4. Procure **Finanse Desktop** na versão `0.1.0` ou **FinanSee Desktop** nas versões `0.1.1` e posteriores.
+4. Procure **FinanSee Desktop** nas versões `0.1.1` e posteriores.
 
 ### Pelo terminal
 
