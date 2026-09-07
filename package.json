@@ -1,0 +1,16 @@
+{
+  "name": "finanse-desktop",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "tauri dev",
+    "build": "tauri build",
+    "build:linux": "tauri build --bundles deb,rpm",
+    "check:desktop": "tauri build --no-bundle",
+    "tauri": "tauri",
+    "sidecar": "node scripts/build_sidecar.mjs"
+  },
+  "devDependencies": {
+    "@tauri-apps/cli": "^2.10.1"
+  }
+}
