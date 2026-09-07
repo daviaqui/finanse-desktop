@@ -1,8 +1,10 @@
-# Validação da entrega — Finanse Desktop 0.1.0
+# Validação — FinanSee Desktop
 
-Validação local realizada em 6–7 de setembro de 2026. Nenhum serviço foi publicado, nenhum instalador foi instalado no sistema e nenhum banco do projeto web foi acessado.
+Validação local realizada em 6–7 de setembro de 2026. Nenhum banco do FinanSee Web foi acessado ou importado.
 
-Este documento preserva o histórico dos testes. Após a validação, a pedido do usuário, foram removidos os dados locais, atalhos, dependências, toolchain auxiliar e todos os arquivos gerados, deixando o projeto em estado de código-fonte. Para executar ou gerar instaladores novamente, siga o README.
+Este documento preserva o histórico dos testes técnicos. Depois deles, o RPM publicado na Release `v0.1.0` foi baixado novamente, instalado pelo DNF e aberto sem depender dos arquivos de desenvolvimento.
+
+Em 7 de setembro de 2026, a limpeza para a versão `0.1.1` foi revalidada com os 32 testes do backend, Ruff, ESLint, teste do frontend, build Vite, `cargo check`, `cargo fmt`, Clippy, teste Rust, smoke test do sidecar e geração dos pacotes `.rpm` e `.deb`. O RPM local manteve o nome técnico `finanse-desktop`, necessário para atualizar a versão `0.1.0`, e o atalho gerado exibiu `FinanSee Desktop`. Esses pacotes `0.1.1` foram inspecionados localmente e não foram publicados nem instalados.
 
 ## Ambiente verificado
 
@@ -67,18 +69,18 @@ Esses testes criam um perfil temporário separado; não usam o perfil real do ap
 
 O toolchain isolado usado na validação foi removido. Instale os pré-requisitos descritos no README para repetir a compilação.
 
-## Instaladores gerados na validação (removidos posteriormente)
+## Instaladores
 
-- `src-tauri/target/release/bundle/rpm/Finanse Desktop-0.1.0-1.x86_64.rpm`
-- `src-tauri/target/release/bundle/deb/Finanse Desktop_0.1.0_amd64.deb`
+- RPM `0.1.0-1.x86_64`, publicado na Release `v0.1.0`.
+- Pacote `.deb` gerado e inspecionado, mas não publicado nem instalado.
 
-Os pacotes incluíam os dois executáveis, o atalho `.desktop`, os ícones, a licença MIT e os avisos/licenças de fontes, sem banco pré-populado. Os instaladores e seu arquivo de checksums foram removidos durante a limpeza; uma nova compilação gera novos artefatos.
+O RPM inclui os dois executáveis, o atalho `.desktop`, os ícones, a licença MIT e os avisos/licenças de fontes, sem banco pré-populado. O arquivo baixado da Release foi comparado com o artefato original e os hashes SHA-256 eram iguais.
 
 ## Limitações verificadas
 
-- Foi executada a aplicação compilada nesta máquina Fedora 44; não foi realizada instalação dos pacotes em uma máquina limpa.
+- O RPM foi instalado e executado no mesmo Fedora 44 usado para compilá-lo; ainda não foi testado em outra máquina limpa.
 - O `.deb` foi gerado e inspecionado, mas não testado em Debian/Ubuntu. A glibc e bibliotecas vinculadas limitam a compatibilidade: este build não representa suporte verificado a distribuições mais antigas.
 - O aplicativo Linux depende de GTK3/WebKitGTK e bibliotecas básicas do sistema. Para instalação totalmente offline, esses pacotes de sistema devem estar presentes ou disponíveis localmente.
 - Windows tem caminhos, nome do sidecar e configuração de WebView2 offline preparados, mas não há compilação/execução Windows verificada.
-- Os instaladores não são assinados. Não há publicação, atualizador, sincronização, criptografia do banco ou importação automática do banco web.
+- O RPM publicado não é assinado. Não há atualizador, sincronização, criptografia do banco ou importação automática do banco web.
 - Backups aceitos têm até 256 MiB. Cópias automáticas de recuperação não são removidas automaticamente.

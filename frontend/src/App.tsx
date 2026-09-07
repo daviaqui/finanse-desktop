@@ -16,7 +16,7 @@ export function App() {
     let active = true
     async function check() {
       try {
-        if (!isTauri()) throw new Error('Abra o Finanse Desktop pelo ícone do aplicativo. Em desenvolvimento, use npm run dev na pasta principal.')
+        if (!isTauri()) throw new Error('Abra o FinanSee Desktop pelo ícone do aplicativo. Em desenvolvimento, use npm run dev na pasta principal.')
         const next = await invoke<BackendStatus>('backend_status')
         if (active) setStatus(next)
       } catch (error) {
@@ -31,7 +31,7 @@ export function App() {
     <div className="desktop-startup" role={status.state === 'error' ? 'alert' : 'status'}>
       <Logo />
       {status.state === 'loading' && <span className="loader" />}
-      <h1>{status.state === 'error' ? 'Não foi possível abrir seus dados' : 'Abrindo Finanse Desktop'}</h1>
+      <h1>{status.state === 'error' ? 'Não foi possível abrir seus dados' : 'Abrindo FinanSee Desktop'}</h1>
       <p>{status.message}</p>
       {status.state === 'error' && <p>Feche o aplicativo e abra novamente. Se o problema continuar, verifique o espaço livre e as permissões da pasta de dados. Seus dados permanecem no computador.</p>}
     </div>
