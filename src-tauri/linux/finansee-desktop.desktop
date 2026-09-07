@@ -1,0 +1,9 @@
+[Desktop Entry]
+Categories={{categories}}
+Comment={{comment}}
+Exec={{exec}}
+StartupWMClass=finanse-desktop
+Icon={{icon}}
+Name=FinanSee Desktop
+Terminal=false
+Type=Application

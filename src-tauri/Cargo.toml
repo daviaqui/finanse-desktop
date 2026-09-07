@@ -1,8 +1,8 @@
 [package]
 name = "finanse-desktop"
-version = "0.1.0"
-description = "Finanças pessoais offline"
-authors = ["Finanse"]
+version = "0.1.1"
+description = "Versão desktop offline do FinanSee Web"
+authors = ["FinanSee"]
 edition = "2021"
 rust-version = "1.85"
 

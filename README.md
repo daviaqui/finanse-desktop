@@ -1,163 +1,148 @@
-# Finanse Desktop
+# FinanSee Desktop
 
-Aplicativo de finanças pessoais offline, com a interface React/TypeScript e a lógica FastAPI reaproveitadas do projeto **Sistema Financeiro**. A instalação abre uma janela Tauri 2 e inicia seu próprio backend Python empacotado; o usuário final não precisa de Docker, Python, Node.js, terminal ou conexão para usar as funções financeiras.
+O **FinanSee Desktop é apenas a versão desktop do FinanSee Web**. Ele reaproveita a interface, as regras financeiras e o visual do sistema web em um aplicativo local para Linux.
 
-## Funcionalidades
+A versão desktop funciona offline, usa um único perfil local e salva os dados em SQLite no próprio computador. Ela não exige servidor, Docker ou conta no FinanSee Web e não sincroniza dados com a versão web.
 
-- Dashboard mensal: receitas recebidas, despesas pagas, saldo, despesas pendentes e taxa de economia.
+## Recursos
 
-- Fluxo de caixa dos últimos seis meses e despesas pagas por categoria.
+- Dashboard com saldo, receitas, despesas, valores pendentes e taxa de economia.
+- Gráficos de fluxo de caixa e despesas por categoria.
+- Criação, edição, exclusão, busca, filtros e paginação de lançamentos.
+- Categorias personalizadas e categorias iniciais.
+- Backup e restauração por seletores de arquivo nativos.
+- Armazenamento local persistente e cálculos monetários em centavos inteiros.
 
-- Lançamentos: criação, edição, exclusão confirmada, busca, filtros por tipo/situação e paginação. A API também preserva filtros por categoria e intervalo de datas.
+## Instalação no Fedora
 
-- Categorias personalizadas e oito categorias iniciais. Excluir uma categoria mantém seus lançamentos sem categoria.
+A versão Linux publicada foi compilada e testada no Fedora 44 para computadores `x86_64`.
 
-- Um perfil local, sem cadastro, login ou sincronização externa.
+A versão disponível atualmente é a `0.1.0`. O instalador mantém `Finanse.Desktop` no nome do arquivo por compatibilidade com o pacote original; no menu e na janela, o nome exibido é **FinanSee Desktop** a partir da versão `0.1.1`.
 
-- Backup e restauração através de diálogos nativos, com confirmação antes da substituição e cópia de recuperação dos dados anteriores.
+### Pela interface gráfica
 
-- Fontes DM Sans/Manrope, ícones, scripts, estilos, Python e migrações empacotados localmente.
+1. Abra a [versão mais recente no GitHub](https://github.com/daviaqui/finanse-desktop/releases/latest).
+2. Em **Assets**, baixe o arquivo terminado em `.rpm`.
+3. Abra o arquivo baixado e escolha **Instalar**. Se ele não abrir no instalador do sistema, clique com o botão direito e escolha **Abrir com → Software**.
+4. Procure **Finanse Desktop** na versão `0.1.0` ou **FinanSee Desktop** nas versões `0.1.1` e posteriores.
 
-O projeto original foi tratado como somente leitura. Apenas arquivos de código, testes e licença foram reutilizados. Não foram copiados arquivos `.env`, bancos, dados financeiros, dependências instaladas ou histórico Git. Nenhum banco do projeto web é acessado ou importado automaticamente.
+### Pelo terminal
 
-## Abrir o aplicativo no Linux
-
-Um checkout contém somente o código-fonte: siga **Desenvolvimento** abaixo para instalar as dependências e abrir o aplicativo. Executáveis e instaladores precisam ser gerados pela compilação.
-
-Depois de compilar, você pode registrar um atalho local e procurar **Finanse Desktop** no menu de aplicativos:
+Baixe o RPM da [página de versões](https://github.com/daviaqui/finanse-desktop/releases/latest) e execute, ajustando o nome caso exista uma versão mais nova:
 
 ```sh
-python3 scripts/install_user_launcher.py
+sudo dnf install ~/Downloads/Finanse.Desktop-0.1.0-1.x86_64.rpm
 ```
 
-O script valida e cria `~/.local/share/applications/com.finanse.desktop.desktop`, apontando para o executável desta pasta. Não altera associações de arquivos nem instala pacotes no sistema. Mantenha a pasta do projeto no mesmo lugar enquanto usar esse atalho. A instalação pelo RPM/DEB fornece um atalho independente da pasta do projeto.
+O usuário do aplicativo instalado não precisa de Python, Node.js, Rust, Docker ou terminal. A conexão com a internet é necessária apenas para baixar o instalador.
+
+### Atualização
+
+Baixe o RPM da nova versão e instale-o com:
+
+```sh
+sudo dnf upgrade ~/Downloads/ARQUIVO_DA_NOVA_VERSAO.rpm
+```
+
+Os dados ficam fora da pasta de instalação e são preservados durante atualizações.
+
+### Desinstalação
+
+```sh
+sudo dnf remove finanse-desktop
+```
+
+A desinstalação preserva os dados financeiros. Para removê-los definitivamente, feche o aplicativo e apague `~/.local/share/com.finanse.desktop/`. Faça um backup antes caso queira recuperar os dados depois.
+
+## Dados, backup e restauração
+
+No Linux, o banco principal fica normalmente em:
+
+```text
+~/.local/share/com.finanse.desktop/finanse.sqlite3
+```
+
+O caminho efetivo aparece em **Backup e dados** dentro do aplicativo. Use **Salvar backup** para criar uma cópia consistente e **Restaurar backup** para substituir os dados atuais após confirmação.
+
+O aplicativo valida integridade, versão, estrutura e conteúdo antes de restaurar. O arquivo de backup contém dados financeiros e não é criptografado.
+
+## Como funciona
+
+```text
+React e TypeScript
+        │ comandos Tauri
+        ▼
+Tauri 2 / Rust
+        │ loopback + credencial temporária
+        ▼
+FastAPI / Python
+        │
+SQLite local
+```
+
+O Tauri inicia e encerra automaticamente o backend Python empacotado. O backend escuta somente em `127.0.0.1`, usa uma porta disponível escolhida pelo sistema e exige uma credencial nova a cada execução. Uma segunda abertura apenas focaliza a janela existente.
+
+Valores monetários são enviados como strings decimais e armazenados como centavos inteiros. Somas e totais usam `Decimal`, evitando erros de ponto flutuante nos dados financeiros.
 
 ## Desenvolvimento
 
-Pré-requisitos **apenas para desenvolver/compilar**: Node.js 22+, npm, Python 3.12–3.14, Rust estável e bibliotecas nativas do Tauri. A versão verificada do toolchain está em `VALIDATION.md`. As dependências npm, Python e Rust estão fixadas pelos arquivos `package-lock.json`, `backend/requirements-lock.txt` e `src-tauri/Cargo.lock`.
+Esta seção é somente para quem deseja alterar ou compilar o código. Usuários que instalaram o RPM não precisam destes passos.
 
-Em Fedora, os pacotes de desenvolvimento usuais são:
+Pré-requisitos:
 
-```
+- Node.js 22 ou mais recente e npm.
+- Python 3.12 a 3.14.
+- Rust estável.
+- Bibliotecas de desenvolvimento do Tauri.
+
+No Fedora:
+
+```sh
 sudo dnf install gcc gcc-c++ gtk3-devel webkit2gtk4.1-devel openssl-devel librsvg2-devel patchelf
 ```
 
-Em Debian/Ubuntu com WebKitGTK 4.1 disponível:
+Instale o Rust conforme a [documentação oficial do Tauri](https://v2.tauri.app/start/prerequisites/) e, na raiz do projeto, execute:
 
-```
-sudo apt install build-essential libgtk-3-dev libwebkit2gtk-4.1-dev libssl-dev librsvg2-dev patchelf
-```
-
-Consulte os [pré-requisitos oficiais do Tauri](https://v2.tauri.app/start/prerequisites/) para outras distribuições. As primeiras instalações de dependências exigem internet; o aplicativo instalado não depende delas.
-
-Na raiz deste projeto:
-
-```
-python3 -m venv .venv  
-.venv/bin/python -m pip install -r backend/requirements-lock.txt  
-npm ci  
-npm --prefix frontend ci  
+```sh
+python3 -m venv .venv
+.venv/bin/python -m pip install -r backend/requirements-lock.txt
+npm ci
+npm --prefix frontend ci
 npm run dev
 ```
 
-`npm run dev` gera o sidecar, inicia o Vite em `127.0.0.1:5173` e abre o Tauri. Abra pela janela desktop: carregar o Vite num navegador comum exibe uma orientação, pois as operações passam pela comunicação nativa. A porta fixa 5173 é exclusiva do servidor de desenvolvimento; o aplicativo instalado usa uma porta de backend escolhida pelo sistema operacional.
+`npm run dev` compila o sidecar, inicia o frontend de desenvolvimento e abre a janela Tauri.
 
-No Windows, crie a venv com `py -3 -m venv .venv` e use `.venv\\Scripts\\python.exe` nos comandos Python. O script npm encontra automaticamente a venv de cada plataforma. É necessário o toolchain MSVC e os pré-requisitos Windows do Tauri.
+## Compilação para Linux
 
-## Compilação e distribuição
-
-```
-npm run build:linux                 \# sidecar + frontend + pacotes .rpm e .deb  
-npm run check:desktop               \# mesma compilação, sem gerar instaladores  
-npm run sidecar                    \# gera apenas o executável Python
+```sh
+npm run build:linux
 ```
 
-Os instaladores ficam em `src-tauri/target/release/bundle/`. O executável desktop e `finanse-backend` ficam lado a lado em `src-tauri/target/release/`; mantenha ambos juntos ao executar diretamente. O sidecar intermediário fica em `dist/` e em `src-tauri/binaries/` com o sufixo do target Rust. **Cada build Tauri reconstrói o sidecar**, evitando distribuir código Python antigo.
+O comando gera os pacotes em `src-tauri/target/release/bundle/`. O build inclui o frontend, o backend PyInstaller, migrações, fontes, ícones e licenças necessários para uso offline.
 
-Para tentar um instalador Windows, execute em um computador Windows:
+O RPM deve ser compilado no sistema Linux mais antigo que se pretende suportar. Binários criados no Fedora 44 não devem ser considerados compatíveis com distribuições mais antigas sem testes.
 
-```
-npm run tauri -- build --bundles nsis
-```
+## Testes
 
-A configuração usa o instalador **offline** do WebView2, que é incorporado durante o build Windows. Não há build Windows verificado nesta entrega. PyInstaller deve rodar na plataforma de destino; não basta passar um target Windows a um build Linux.
+Depois de instalar as dependências de desenvolvimento:
 
-Os pacotes Linux usam GTK3/WebKitGTK 4.1 e as bibliotecas básicas da distribuição. Esses componentes de sistema precisam estar presentes para instalação/execução offline. O binário herda a versão mínima da glibc e das bibliotecas do sistema onde foi compilado; gere uma versão na distribuição mais antiga que pretende suportar. O pacote produzido em Fedora 44 não deve ser presumido compatível com Ubuntu antigo. Não foram habilitados atualização automática, telemetria, publicação ou assinatura de código.
-
-## Armazenamento e atualizações
-
-O identificador permanente é `com.finanse.desktop`. O Tauri fornece a pasta de dados do sistema:
-
-| Sistema | Local padrão |
-| - | - |
-| Linux | `$XDG\_DATA\_HOME/com.finanse.desktop/`, ou `~/.local/share/com.finanse.desktop/` |
-| Windows | `%APPDATA%\\com.finanse.desktop\\` |
-
-
-O arquivo principal é `finanse.sqlite3`. Durante o uso, o SQLite pode criar `finanse.sqlite3-wal` e `finanse.sqlite3-shm`. `desktop.lock` protege o perfil contra acesso por outro sidecar. O caminho efetivo aparece na tela **Backup e dados**.
-
-A pasta fica fora da instalação e não é apagada em reinicializações ou atualizações. Não altere o identificador do aplicativo ao atualizar. As categorias padrão são criadas somente quando o perfil é criado pela primeira vez; categorias apagadas não reaparecem ao reiniciar.
-
-As migrações Alembic são específicas do desktop: `desktop\_001` cria o esquema SQLite e `desktop\_002` adiciona o índice de consultas por perfil/data. Elas são executadas automaticamente antes de liberar a interface. Antes de atualizar um banco existente, o aplicativo salva `pre-upgrade-\<revisão\>.sqlite3`. Bancos de versões futuras e bancos web não são tratados como bancos desktop compatíveis.
-
-## Backup e restauração
-
-1. Abra **Backup e dados → Salvar backup**, escolha o destino e confirme caso o arquivo já exista.
-
-2. Guarde a cópia em outra pasta ou dispositivo. O arquivo contém dados financeiros e não é criptografado.
-
-3. Para restaurar, escolha **Restaurar backup**, selecione um `.sqlite3` criado pelo Finanse Desktop e confirme **Substituir**.
-
-O backup usa a API de backup online do SQLite; copiar apenas o arquivo principal enquanto há WAL aberto não é equivalente. O novo arquivo é produzido temporariamente e renomeado para o destino depois de concluído.
-
-Na restauração, o aplicativo verifica tamanho (até 256 MiB), identificador, integridade, revisão, esquema exato, ausência de estruturas extras, chaves estrangeiras, perfil e valores dos registros. A cópia selecionada é aberta somente para leitura, copiada para uma área temporária e novamente validada. Migrações necessárias são aplicadas nessa cópia, preservando o arquivo selecionado. Os dados atuais são salvos em `pre-restore-\<id\>.sqlite3`; então o SQLite substitui o conteúdo do banco vivo dentro de uma transação de escrita. Requisições ao banco ficam serializadas durante a operação. A interface descarta seus dados em cache após o sucesso.
-
-Arquivos de recuperação `pre-restore-\*.sqlite3` e `pre-upgrade-\*.sqlite3` também podem ser selecionados para restauração. O banco vivo e seus arquivos internos não podem ser sobrescritos pelo diálogo de backup. Não há rotação automática das cópias de recuperação; remova cópias antigas somente depois de confirmar que possui um backup útil.
-
-## Arquitetura e precisão
-
-```
-React + TypeScript (assets locais, HashRouter)  
-              │ comandos Tauri  
-              ▼  
-Rust: ciclo de vida, instância única, diálogos e HTTP restrito  
-              │ 127.0.0.1:\<porta dinâmica\> + credencial de 256 bits  
-              ▼  
-FastAPI / SQLAlchemy / lógica original em Decimal  
-              │  
-SQLite em WAL + migrações Alembic + backup online
+```sh
+.venv/bin/python scripts/check.py
+npm run sidecar
+.venv/bin/python scripts/smoke_sidecar.py
 ```
 
-A credencial muda a cada inicialização, é enviada ao processo Python por stdin e fica somente em memória. Não é incluída em argumentos, arquivos, `localStorage` ou respostas ao frontend. O cliente HTTP nativo ignora proxies e redirecionamentos. A comunicação genérica permite apenas rotas financeiras conhecidas; backup e restauração passam por comandos nativos separados. O backend exige a credencial inclusive no health check, recusa cabeçalhos Origin e não expõe login, documentação ou CORS. O frontend não recebe permissão de shell, acesso genérico a arquivos ou HTTP.
+Os testes cobrem CRUD de lançamentos, dashboard, categorias, precisão monetária, migrações, persistência, autenticação local e backup/restauração. Consulte [VALIDATION.md](VALIDATION.md) para os resultados já verificados.
 
-A porta é reservada com `bind(("127.0.0.1", 0))` e o mesmo socket é entregue ao Uvicorn, sem intervalo para outro processo ocupar a porta. A segunda abertura foca a janela existente; um lock adicional protege o banco entre processos. Ao fechar, o Tauri solicita encerramento e aguarda um prazo limitado; o backend também observa EOF do stdin para encerrar se o pai desaparecer.
+## Plataformas
 
-**Dinheiro:** a API usa strings decimais; SQLAlchemy converte para **centavos inteiros** (`BIGINT` com verificação `typeof(amount)='integer'`) ao persistir. São aceitos valores positivos de até `999999999999.99`, com no máximo duas casas decimais. `Decimal` faz as somas e subtrações do dashboard. Cards e tabelas formatam strings sem converter para ponto flutuante. A geometria e os eixos dos gráficos usam números aproximados; os valores persistidos e os totais financeiros permanecem exatos.
+- Fedora 44 `x86_64`: compilado, instalado e executado.
+- Debian/Ubuntu: pacote `.deb` gerado anteriormente, sem instalação validada.
+- Windows: estrutura portátil preparada, sem build ou execução validada.
 
-**SQLite:** UUIDs usam o tipo portátil do SQLAlchemy; enums têm restrições CHECK; chaves estrangeiras são habilitadas em cada conexão; exclusão de categoria preserva lançamentos via SET NULL. Datas são datas civis sem conversão de fuso, timestamps usam CURRENT\_TIMESTAMP. A busca preserva comparação sem diferenciar maiúsculas/minúsculas em português por casefold. As consultas continuam restritas ao mesmo UUID de perfil. A tabela de usuários foi mantida para reaproveitar relacionamentos, mas guarda apenas um perfil sintético com autenticação web desabilitada.
+O aplicativo não possui sincronização, atualização automática, telemetria ou importação automática do banco do FinanSee Web.
 
-## Validação
+## Licença
 
-```
-.venv/bin/python -m pytest -q backend/tests  
-.venv/bin/ruff check backend scripts  
-npm --prefix frontend run lint  
-npm --prefix frontend test  
-npm --prefix frontend run build  
-cargo fmt --manifest-path src-tauri/Cargo.toml -- --check  
-cargo clippy --manifest-path src-tauri/Cargo.toml -- -D warnings  
-cargo test --manifest-path src-tauri/Cargo.toml  
-npm run sidecar  
-.venv/bin/python scripts/smoke\_sidecar.py  
-npm run check:desktop
-```
-
-O teste de sidecar usa somente dados sintéticos em pastas temporárias e executa o binário com PATH vazio. Para a janela real no Linux, instale `tauri-driver` (`cargo install tauri-driver --locked`) e disponibilize `WebKitWebDriver`; veja `scripts/smoke\_desktop.py` e `VALIDATION.md`.
-
-Os testes do backend foram adaptados dos testes do projeto web. A cobertura adicional verifica centavos, arredondamento inválido, filtros, paginação estável, exclusão de categorias, migrações novas/existentes, recuperação, arquivos corrompidos/incompatíveis, autenticação local e persistência. Não executam comandos no projeto original nem carregam sua configuração.
-
-## Problemas de inicialização
-
-A janela mostra o carregamento até o backend responder e exibe uma mensagem se ocorrer falha ou timeout. Verifique espaço em disco e acesso à pasta informada. Se outro processo ainda estiver finalizando, aguarde alguns segundos e abra novamente. Não apague a pasta de dados para corrigir um problema de inicialização. Um banco de versão futura deve ser aberto com a versão correspondente do aplicativo; uma cópia válida pode ser recuperada em uma instalação compatível.
-
-Consulte `VALIDATION.md` para distinguir o que foi testado nesta máquina das limitações de plataforma.
+Consulte [LICENSE](LICENSE) e [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md).

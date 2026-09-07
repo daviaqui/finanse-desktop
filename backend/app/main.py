@@ -8,7 +8,7 @@ from app.api.error_handlers import register_error_handlers
 from app.api.routes import categories, dashboard, maintenance, transactions
 from app.core.config import TOKEN
 
-app = FastAPI(title="Finanse Desktop", docs_url=None, redoc_url=None, openapi_url=None)
+app = FastAPI(title="FinanSee Desktop", docs_url=None, redoc_url=None, openapi_url=None)
 
 
 class LocalAccess:

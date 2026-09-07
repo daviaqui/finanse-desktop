@@ -33,7 +33,7 @@ def initialize() -> None:
     if DB_PATH.exists():
         with sqlite3.connect(DB_PATH) as db:
             if db.execute("PRAGMA application_id").fetchone()[0] != APPLICATION_ID:
-                raise RuntimeError("O arquivo local não é um banco Finanse Desktop")
+                raise RuntimeError("O arquivo local não é um banco FinanSee Desktop")
             version = db.execute("SELECT version_num FROM alembic_version").fetchone()[0]
         if version not in ("desktop_001", LATEST_REVISION):
             raise RuntimeError("Versão de banco incompatível; use a versão correspondente do aplicativo")

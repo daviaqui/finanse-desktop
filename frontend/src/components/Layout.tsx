@@ -2,7 +2,6 @@ import { useState } from 'react'
 import { NavLink, Outlet, useLocation } from 'react-router-dom'
 import {
   ChartPie,
-  ChevronsUpDown,
   LayoutDashboard,
   Menu,
   ReceiptText,
@@ -49,23 +48,21 @@ export function Layout() {
           <p>Pequenas decisões constroem grandes resultados.</p>
         </div>
         <div className="user-menu">
-          <div className="avatar">{user?.name.slice(0, 2).toUpperCase()}</div>
+          <div className="avatar">{user.name.slice(0, 2).toUpperCase()}</div>
           <div className="user-copy">
-            <strong>{user?.name}</strong>
-            <span>{user?.email}</span>
+            <strong>{user.name}</strong>
+            <span>{user.email}</span>
           </div>
-
         </div>
       </aside>
       <main className="main-content">
         <header className="mobile-header">
           <button className="icon-button" onClick={() => setMenuOpen(true)}><Menu size={22} /></button>
           <span>{title}</span>
-          <button className="icon-button avatar-small">{user?.name.slice(0, 1).toUpperCase()}<ChevronsUpDown size={12} /></button>
+          <div className="avatar avatar-small">{user.name.slice(0, 1).toUpperCase()}</div>
         </header>
         <Outlet />
       </main>
     </div>
   )
 }
-

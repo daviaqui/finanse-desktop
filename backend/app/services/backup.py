@@ -26,7 +26,7 @@ def validate(path: Path) -> str:
     with readonly(path) as db:
         db.execute("PRAGMA trusted_schema=OFF")
         if db.execute("PRAGMA application_id").fetchone()[0] != APPLICATION_ID:
-            raise ValueError("Selecione um backup do Finanse Desktop")
+            raise ValueError("Selecione um backup do FinanSee Desktop")
         if db.execute("PRAGMA integrity_check").fetchall() != [("ok",)]:
             raise ValueError("O backup está corrompido")
         revision = db.execute("SELECT version_num FROM alembic_version").fetchall()

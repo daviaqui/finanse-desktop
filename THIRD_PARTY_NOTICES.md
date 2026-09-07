@@ -1,6 +1,6 @@
 # Reutilização e licenças
 
-A interface e a lógica financeira foram adaptadas do projeto local `Sistema Financeiro`. Sua licença original foi preservada em `LICENSE`.
+A interface e a lógica financeira foram adaptadas do FinanSee Web. Sua licença original foi preservada em `LICENSE`.
 
 Tauri e seus plugins, React, FastAPI, SQLAlchemy, Alembic, Uvicorn, PyInstaller e demais bibliotecas conservam suas respectivas licenças. Os lockfiles registram as versões usadas. PyInstaller distribui seu bootloader sob os termos da licença e da exceção de distribuição presentes no pacote.
 

@@ -23,7 +23,7 @@ def main():
     try:
         lock.acquire(timeout=0)
     except Timeout:
-        raise RuntimeError("O Finanse Desktop já está aberto para este perfil") from None
+        raise RuntimeError("O FinanSee Desktop já está aberto para este perfil") from None
     try:
         from app.db.migrations import initialize
 

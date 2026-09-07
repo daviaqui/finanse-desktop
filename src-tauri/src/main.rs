@@ -316,7 +316,7 @@ fn main() {
             Ok(())
         })
         .build(tauri::generate_context!())
-        .expect("Não foi possível abrir a janela do Finanse Desktop");
+        .expect("Não foi possível abrir a janela do FinanSee Desktop");
     app.run(|app, event| {
         if let tauri::RunEvent::ExitRequested { api, .. } = event {
             let backend = app.state::<Backend>();
